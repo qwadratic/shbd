@@ -1,8 +1,8 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy import Column, String, DateTime, BigInteger, create_engine
+from sqlalchemy import Column, String, DateTime, BigInteger, and_, create_engine, or_, select
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from config import read_config
 
@@ -54,3 +54,18 @@ async def get_async_session() -> AsyncSession:
     )
     return async_session()
 
+async def get_users_without_payment():
+    async with await get_async_session() as session:
+        return await session.execute(
+            select(User).where(
+                or_(
+                    User.last_paid < datetime.now(timezone.utc) - timedelta(days=30), 
+                    User.last_paid == None)))
+
+async def get_users_with_payment():
+    q = select(User).where(
+            and_(
+                User.last_paid != None,
+                User.last_paid > datetime.now(timezone.utc) - timedelta(days=30)))
+    async with await get_async_session() as session:
+        return await session.execute(q)

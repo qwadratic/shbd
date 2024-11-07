@@ -52,29 +52,6 @@ async def payment_webhook(request: Request):
                 session.add(user)
                 await session.commit()
 
-        # if not all([user_id, amount, payment_status]):
-        #     raise HTTPException(status_code=400, detail="Missing required payment information")
-            
-        # if payment_status == 'successful':
-        #     conn = sqlite3.connect('users.db')
-        #     c = conn.cursor()
-            
-        #     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        #     next_payment = (datetime.now() + timedelta(days=30)).strftime('%Y-%m-%d %H:%M:%S')
-            
-        #     c.execute('''UPDATE users 
-        #                 SET last_paid = ?, next_payment = ?
-        #                 WHERE user_id = ?''', (current_time, next_payment, user_id))
-        #     conn.commit()
-        #     conn.close()
-            
-        #     # You might want to notify the user via bot here
-        #     # This would require setting up communication between FastAPI and your bot
-            
-        #     return {"status": "success", "message": "Payment processed successfully"}
-        # else:
-        #     raise HTTPException(status_code=400, detail="Payment not successful")
-            
     except json.JSONDecodeError:
         raise HTTPException(status_code=400, detail="Invalid JSON payload")
     except Exception as e:

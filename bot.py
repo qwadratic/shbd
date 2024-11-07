@@ -1,5 +1,5 @@
 from sqlalchemy import and_, or_, select
-from models import User, get_async_session, init_db
+from models import User, get_async_session, get_users_with_payment, get_users_without_payment, init_db
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from datetime import datetime, timedelta, timezone
@@ -19,22 +19,6 @@ app = Client(
 async def send_message(user_id: int, message: str):
     async with app:
         await app.send_message(user_id, message)
-
-async def get_users_without_payment():
-    async with await get_async_session() as session:
-        return await session.execute(
-            select(User).where(
-                or_(
-                    User.last_paid < datetime.now(timezone.utc) - timedelta(days=30), 
-                    User.last_paid == None)))
-
-async def get_users_with_payment():
-    q = select(User).where(
-            and_(
-                User.last_paid != None,
-                User.last_paid > datetime.now(timezone.utc) - timedelta(days=30)))
-    async with await get_async_session() as session:
-        return await session.execute(q)
 
 @app.on_message(filters.command("unpaid") & filters.create(lambda _, __, m: m.from_user.id in config['telegram']['admin_ids']))
 async def unpaid(client, message):
