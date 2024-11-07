@@ -28,7 +28,7 @@ async def notify_users():
                 reply_markup=InlineKeyboardMarkup([[
                     InlineKeyboardButton(
                         "Оплатити", 
-                        url=generate_payment_url(u.id))
+                        url=generate_payment_url(u.user_id))
                     ]])
                 )
             async with await get_async_session() as session:
@@ -36,7 +36,7 @@ async def notify_users():
                 session.add(u)
                 await session.commit()
             
-            print(f"[{datetime.now(timezone.utc)}] Notified user {u.id} {u.username} {u.display_name}")
+            print(f"[{datetime.now(timezone.utc)}] Notified user {u.user_id} {u.username} {u.display_name}")
 
 
 async def main():
