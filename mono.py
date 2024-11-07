@@ -8,7 +8,7 @@ WEBHOOK_URL = config['mono']['webhook_url']
 def generate_payment_url(user_id: int) -> str:
     url = "https://api.monobank.ua/api/merchant/invoice/create"
     data = {
-        "amount": 100,
+        "amount": 8800,
         "merchantPaymInfo": {
             "destination": "За iнформацiйнi послуги",
             "comment": f"{user_id}",
