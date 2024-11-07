@@ -26,6 +26,11 @@ async def lifespan(app: FastAPI):
 
 fastapi_app.router.lifespan_context = lifespan
 
+@fastapi_app.get("/")
+async def root():
+    return {"status": "ok"}
+
+
 @fastapi_app.post("/wh")
 async def payment_webhook(request: Request):
     try:
