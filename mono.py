@@ -4,11 +4,13 @@ from config import read_config
 config = read_config()
 MONOBANK_API_TOKEN = config['mono']['api_token']
 WEBHOOK_URL = config['mono']['webhook_url']
+AMOUNT = int(config['mono']['amount'])
+
 
 def generate_payment_url(user_id: int) -> str:
     url = "https://api.monobank.ua/api/merchant/invoice/create"
     data = {
-        "amount": 8800,
+        "amount": AMOUNT * 100,
         "merchantPaymInfo": {
             "destination": "За iнформацiйнi послуги",
             "comment": f"{user_id}",
