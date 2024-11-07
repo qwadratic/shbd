@@ -22,15 +22,16 @@ async def notify_users():
     for user in users:
         u = user[0]
         if not u.last_notified or u.last_notified + timedelta(days=5) >= datetime.now(timezone.utc):
-            await pyro_client.send_message(
-                u.user_id, 
-                "Ви не сплатили за останню оплату. Будь ласка, сплатіть зараз.",
-                reply_markup=InlineKeyboardMarkup([[
-                    InlineKeyboardButton(
-                        "Оплатити", 
-                        url=generate_payment_url(u.user_id))
-                    ]])
-                )
+            async with pyro_client as client:
+                await pyro_client.send_message(
+                    u.user_id, 
+                    "Ви не сплатили за останню оплату. Будь ласка, сплатіть зараз.",
+                    reply_markup=InlineKeyboardMarkup([[
+                        InlineKeyboardButton(
+                            "Оплатити", 
+                            url=generate_payment_url(u.user_id))
+                        ]])
+                    )
             async with await get_async_session() as session:
                 u.last_notified = datetime.now(timezone.utc)
                 session.add(u)
