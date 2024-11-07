@@ -1,0 +1,6 @@
+shbd
+users.db
+*.session
+*.session-journal
+config.yaml
+__pycache__
