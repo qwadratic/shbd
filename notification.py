@@ -22,7 +22,7 @@ async def notify_users():
 
     for user in users:
         u = user[0]
-        if not u.last_notified or u.last_notified + timedelta(days=5) >= datetime.now(timezone.utc):
+        if not u.last_notified or (u.last_notified + timedelta(days=5)).astimezone(timezone.utc) >= datetime.now(timezone.utc):
             await pyro_client.send_message(
                 u.user_id, 
                 "Ви не сплатили за останню оплату. Будь ласка, сплатіть зараз.",
