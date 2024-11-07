@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime, timedelta, timezone
 from config import read_config
 from pyrogram import Client
@@ -32,7 +33,14 @@ async def notify_users():
                 u.last_notified = datetime.now(timezone.utc)
                 await session.commit()
 
-if __name__ == "__main__":
+
+async def main():
     scheduler = AsyncIOScheduler()
     scheduler.add_job(notify_users, 'interval', days=1)
     scheduler.start()
+    while True:
+        await asyncio.sleep(1000)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
