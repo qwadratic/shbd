@@ -8,14 +8,15 @@ from mono import generate_payment_url
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 config = read_config()
-pyro_client = Client(
-    "notification_bot",
-    api_id=config['telegram']['api_id'],
-    api_hash=config['telegram']['api_hash'],
-    bot_token=config['telegram']['bot_token']
-)
 
 async def notify_users():
+    pyro_client = Client(
+        "notification_bot",
+        api_id=config['telegram']['api_id'],
+        api_hash=config['telegram']['api_hash'],
+        bot_token=config['telegram']['bot_token'],
+    )
+    await pyro_client.start()
     users = (await get_users_without_payment()).all()
     print(f"[{datetime.now(timezone.utc)}] Found {len(users)} users without payment")
 
@@ -39,6 +40,7 @@ async def notify_users():
             
             print(f"[{datetime.now(timezone.utc)}] Notified user {u.user_id} {u.username} {u.display_name}")
 
+    await pyro_client.stop()
 
 async def main():
     scheduler = AsyncIOScheduler()
