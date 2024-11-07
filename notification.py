@@ -16,7 +16,9 @@ pyro_client = Client(
 )
 
 async def notify_users():
-    users = await get_users_without_payment()
+    users = (await get_users_without_payment()).all()
+    print(f"[{datetime.now(timezone.utc)}] Found {len(users)} users without payment")
+
     for user in users:
         u = user[0]
         if not u.last_notified or u.last_notified + timedelta(days=5) >= datetime.now(timezone.utc):
@@ -31,12 +33,15 @@ async def notify_users():
                 )
             async with await get_async_session() as session:
                 u.last_notified = datetime.now(timezone.utc)
+                session.add(u)
                 await session.commit()
+            
+            print(f"[{datetime.now(timezone.utc)}] Notified user {u.id} {u.username} {u.display_name}")
 
 
 async def main():
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(notify_users, 'interval', days=1)
+    scheduler.add_job(notify_users, 'interval', days=1, next_run_time=datetime.now(timezone.utc) + timedelta(seconds=1))
     scheduler.start()
     while True:
         await asyncio.sleep(1000)
