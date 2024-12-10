@@ -56,7 +56,10 @@ async def start(client, message):
                 )
         else:
             await message.reply(f"Привiт, {user.display_name}!")
-            if not user.last_paid or user.last_paid + timedelta(days=30) < datetime.now(timezone.utc):
+            payment_due = \
+                user.last_paid.replace(tzinfo=timezone.utc) + timedelta(days=30) \
+            
+            if  datetime.now(timezone.utc) > payment_due or not user.last_paid:
                 payment_url = generate_payment_url(user_id)
                 await message.reply(
                     f"Ваша пiдписка закiнчилася. Натиснiть кнопку нижче для оплати",
