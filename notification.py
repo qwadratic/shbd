@@ -23,15 +23,19 @@ async def notify_users():
     for user in users:
         u = user[0]
         if not u.last_notified or (u.last_notified + timedelta(days=5)).astimezone(timezone.utc) <= datetime.now(timezone.utc):
-            await pyro_client.send_message(
-                u.user_id, 
-                "Ви не сплатили за останню оплату. Будь ласка, сплатіть зараз.",
-                reply_markup=InlineKeyboardMarkup([[
-                    InlineKeyboardButton(
-                        "Оплатити", 
-                        url=generate_payment_url(u.user_id))
-                    ]])
-                )
+            try:
+                await pyro_client.send_message(
+                    u.user_id, 
+                    "Ви не сплатили за доступ до чату. Будь ласка, сплатіть зараз. Якщо вам здається, що нагадування прийшло помилково, будь ласка, зверніться до @qwadratic.",
+                    reply_markup=InlineKeyboardMarkup([[
+                        InlineKeyboardButton(
+                            "Оплатити", 
+                            url=generate_payment_url(u.user_id))
+                        ]])
+                    )
+            except Exception as e:
+                print(f"[{datetime.now(timezone.utc)}] Error sending message to user {u.user_id} {u.username} {u.display_name}: {e}")
+            
             async with await get_async_session() as session:
                 u.last_notified = datetime.now(timezone.utc)
                 session.add(u)
